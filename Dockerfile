@@ -60,7 +60,10 @@ RUN apt-get update && \
       libfreetype6-dev \
       libtidy-dev \
       libtidy5 \
-      libcurl4-openssl-dev && \
+      libcurl4-openssl-dev \
+      libgeoip-dev \
+      libmagick++-dev \
+      libmemcached-dev && \
     docker-php-ext-install -j$(nproc) gettext && \
     docker-php-ext-install -j$(nproc) xsl && \
     docker-php-ext-install -j$(nproc) xml && \
@@ -77,15 +80,31 @@ RUN apt-get update && \
     docker-php-ext-install -j$(nproc) tidy && \
     docker-php-ext-install -j$(nproc) intl && \
     docker-php-ext-install -j$(nproc) curl && \
-    docker-php-ext-install -j$(nproc) ftp
-
-RUN pear channel-discover pear.horde.org && \
+    docker-php-ext-install -j$(nproc) ftp && \
+    pear channel-discover pear.horde.org && \
+    pecl install -f geoip && \
+    echo extension=geoip.so > /usr/local/etc/php/conf.d/docker-php-ext-pecl-geoip.ini && \
+    pecl install -f horde/horde_lz4 && \
+    echo extension=horde_lz4.so > /usr/local/etc/php/conf.d/docker-php-ext-pecl-horde_lz4.ini && \
+    pecl install -f imagick && \
+    echo extension=imagick.so > /usr/local/etc/php/conf.d/docker-php-ext-pecl-imagick.ini && \
+    pecl install -f memcached-2.2.0 && \
+    echo extension=memcached.so > /usr/local/etc/php/conf.d/docker-php-ext-pecl-memcached.ini && \
     pear install horde/horde_role && \
     echo 'a:1:{s:10:"__channels";a:4:{s:12:"pecl.php.net";a:0:{}s:5:"__uri";a:0:{}s:11:"doc.php.net";a:0:{}s:14:"pear.horde.org";a:1:{s:9:"horde_dir";s:19:"/var/www/html/horde";}}}' > /root/.pearrc && \
-    pear install -a -B -f horde/webmail-${HORDE_WEBMAIL_VERSION}
-#RUN rm -fr /tmp/pear
-# && \
-#RUN sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g;s/Indexes//g;s/#LoadModule rewrite_module/LoadModule rewrite_module/g' /etc/apache2/httpd.conf 
+    pear install -a -B -f horde/webmail-${HORDE_WEBMAIL_VERSION} && \
+    sed '/bundle->configDb/d;/bundle->configAuth/d' /usr/local/bin/webmail-install > /usr/local/bin/webmail-migrateDb && \
+    chmod +x /usr/local/bin/webmail-migrateDb && \
+    rm -fr /tmp/pear && \
+    rm -rf /var/lib/apt/lists/* 
 
+ENV HORDE_SQL_PORT=3306 \
+    HORDE_SQL_DATABASE=horde
 
+COPY conf.php horde/config/conf.php
+RUN chown -R www-data horde/static && find . -type d -name config -exec chown -R www-data {} \; 
+COPY start-horde /usr/local/bin/start-horde
+CMD ["start-horde"]
+RUN a2enmod rewrite && \
+    sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf
 

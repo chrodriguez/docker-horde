@@ -1,0 +1,43 @@
+version: '3.1'
+volumes:
+  horde-db:
+  horde-turba:
+  horde-nag:
+  horde-ingo:
+  horde-gollem:
+  horde-mnemo:
+  horde-horde:
+  horde-imp:
+  horde-trean:
+  horde-kronolith:
+services:
+  horde:
+    build: .
+    environment:
+      HORDE_SQL_USERNAME: root
+      HORDE_SQL_PASSWORD: pass
+      HORDE_SQL_HOST: db
+    restart: on-failure
+    links:
+      - db
+    ports:
+      - "80:80"
+    volumes:
+    - horde-turba:/var/www/html/horde/turba/config
+    - horde-nag:/var/www/html/horde/nag/config
+    - horde-ingo:/var/www/html/horde/ingo/config
+    - horde-gollem:/var/www/html/horde/gollem/config
+    - horde-mnemo:/var/www/html/horde/mnemo/config
+    - horde-horde:/var/www/html/horde/config
+    - horde-imp:/var/www/html/horde/imp/config
+    - horde-trean:/var/www/html/horde/trean/config
+    - horde-kronolith:/var/www/html/horde/kronolith/config
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: horde
+    volumes:
+      - horde-db:/var/lib/mysql
+

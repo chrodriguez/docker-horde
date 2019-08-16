@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+webmail-migrateDb
+exec apache2-foreground
