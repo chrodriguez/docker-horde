@@ -30,3 +30,13 @@ containing Horde's modules configurations.
 ## TODO
 
 * Explain how to run cron jobs
+* DocumentRoot en /var/www/html/horde
+* Parameterize `php.ini`:
+  * Upload and post max size
+  * Memory limit
+* Remove static assets: 
+
+```
+SetEnvIf Request_URI "\.gif$|\.jpg$" is_static
+CustomLog logs/access_log common env=!is_static
+```

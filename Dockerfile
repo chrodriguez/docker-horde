@@ -98,13 +98,16 @@ RUN apt-get update && \
     rm -fr /tmp/pear && \
     rm -rf /var/lib/apt/lists/* 
 
+RUN a2enmod rewrite && \
+    sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf
+RUN apt update && apt install -y locales && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/;s/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
+
 ENV HORDE_SQL_PORT=3306 \
     HORDE_SQL_DATABASE=horde
-
-COPY conf.php horde/config/conf.php
+COPY templates/horde/conf.php horde/config/conf.php
+COPY templates /horde-templates
 RUN chown -R www-data horde/static && find . -type d -name config -exec chown -R www-data {} \; 
 COPY start-horde /usr/local/bin/start-horde
 CMD ["start-horde"]
-RUN a2enmod rewrite && \
-    sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf
 

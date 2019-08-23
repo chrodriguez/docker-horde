@@ -1,15 +1,15 @@
 version: '3.1'
 volumes:
   horde-db:
-  horde-turba:
-  horde-nag:
-  horde-ingo:
-  horde-gollem:
-  horde-mnemo:
-  horde-horde:
-  horde-imp:
-  horde-trean:
-  horde-kronolith:
+#   horde-turba:
+#   horde-nag:
+#   horde-ingo:
+#   horde-gollem:
+#   horde-mnemo:
+#   horde-horde:
+#   horde-imp:
+#   horde-trean:
+#   horde-kronolith:
 services:
   horde:
     build: .
@@ -17,22 +17,36 @@ services:
       HORDE_SQL_USERNAME: root
       HORDE_SQL_PASSWORD: pass
       HORDE_SQL_HOST: db
+      IMP_HOSTSPEC: imap.example.com
+      IMP_MAILDOMAIN: example.com
     restart: on-failure
     links:
       - db
+      - memcached
     ports:
       - "80:80"
     volumes:
-    - horde-turba:/var/www/html/horde/turba/config
-    - horde-nag:/var/www/html/horde/nag/config
-    - horde-ingo:/var/www/html/horde/ingo/config
-    - horde-gollem:/var/www/html/horde/gollem/config
-    - horde-mnemo:/var/www/html/horde/mnemo/config
-    - horde-horde:/var/www/html/horde/config
-    - horde-imp:/var/www/html/horde/imp/config
-    - horde-trean:/var/www/html/horde/trean/config
-    - horde-kronolith:/var/www/html/horde/kronolith/config
+    - ./horde/turba:/var/www/html/horde/turba/config
+    - ./horde/nag:/var/www/html/horde/nag/config
+    - ./horde/ingo:/var/www/html/horde/ingo/config
+    - ./horde/gollem:/var/www/html/horde/gollem/config
+    - ./horde/mnemo:/var/www/html/horde/mnemo/config
+    - ./horde/horde:/var/www/html/horde/config
+    - ./horde/imp:/var/www/html/horde/imp/config
+    - ./horde/trean:/var/www/html/horde/trean/config
+    - ./horde/kronolith:/var/www/html/horde/kronolith/config
 
+      #    - horde-turba:/var/www/html/horde/turba/config
+      #    - horde-nag:/var/www/html/horde/nag/config
+      #    - horde-ingo:/var/www/html/horde/ingo/config
+      #    - horde-gollem:/var/www/html/horde/gollem/config
+      #    - horde-mnemo:/var/www/html/horde/mnemo/config
+      #    - horde-horde:/var/www/html/horde/config
+      #    - horde-imp:/var/www/html/horde/imp/config
+      #    - horde-trean:/var/www/html/horde/trean/config
+      #    - horde-kronolith:/var/www/html/horde/kronolith/config
+  memcached:
+    image: memcached:1.5-alpine
   db:
     image: mysql:5.7
     environment:
