@@ -96,12 +96,11 @@ RUN apt-get update && \
     sed '/bundle->configDb/d;/bundle->configAuth/d' /usr/local/bin/webmail-install > /usr/local/bin/webmail-migrateDb && \
     chmod +x /usr/local/bin/webmail-migrateDb && \
     rm -fr /tmp/pear && \
+    a2enmod rewrite && \
+    sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf && \
+    apt update && apt install -y locales && \
+    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/;s/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && locale-gen && \
     rm -rf /var/lib/apt/lists/* 
-
-RUN a2enmod rewrite && \
-    sed -i 's/ServerTokens OS/ServerTokens Prod/g;s/ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf
-RUN apt update && apt install -y locales && \
-    sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/;s/# es_ES.UTF-8 UTF-8/es_ES.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
 
 ENV HORDE_SQL_PORT=3306 \
     HORDE_SQL_DATABASE=horde
