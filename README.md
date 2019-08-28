@@ -53,3 +53,5 @@ containing Horde's modules configurations.
 * Explain how to run cron jobs
 * Errors not to be shown in browser
 * Document in README env vars for IMP and INGO
+* Explain how uninitialized configuration volumes are populated and why we do
+  this
