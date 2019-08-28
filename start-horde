@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
-
+PHP_INI_UPLOAD_MAX_FILE_SIZE=${PHP_INI_UPLOAD_MAX_FILE_SIZE:-'8M'}
+PHP_INI_POST_MAX_SIZE=${PHP_INI_POST_MAX_SIZE:-'9M'}
+PHP_INI_MEMORY_LIMIT=${PHP_INI_MEMORY_LIMIT:-'128M'}
+PHP_INI_TIMEZONE=${PHP_INI_TIMEZONE:-'America/Argentina/Buenos_Aires'}
+HORDE_INI=/usr/local/etc/php/conf.d/horde.ini
+echo "upload_max_file_size = $PHP_INI_UPLOAD_MAX_FILE_SIZE;" > $HORDE_INI
+echo "post_max_size = $PHP_INI_POST_MAX_SIZE;" >> $HORDE_INI
+echo "memory_limit = $PHP_INI_MEMORY_LIMIT;" >> $HORDE_INI
+echo "date.timezone = $PHP_INI_TIMEZONE;" >> $HORDE_INI
+cp /horde-templates/horde/prefs.local.php /var/www/html/horde/config
+cp /horde-templates/imp/backends.local.php /var/www/html/horde/imp/config
+cp /horde-templates/ingo/backends.local.php /var/www/html/horde/ingo/config
 webmail-migrateDb
-cp /horde-templates/imp/backends.php /var/www/html/horde/imp/config
 exec apache2-foreground

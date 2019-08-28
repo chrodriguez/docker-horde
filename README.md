@@ -27,16 +27,29 @@ volumes.
 Propose volumes are listed inside `docker-compose.yml` for each directory
 containing Horde's modules configurations.
 
+## Configuration variables
+
+* **ENV HORDE_SQL_PORT:**
+* **HORDE_SQL_DATABASE:**
+* **HORDE_SQL_USERNAME:**
+* **HORDE_SQL_PASSWORD:**
+* **HORDE_SQL_HOST:**
+* **HORDE_THEME:**
+* **HORDE_THEME_LOCKED:**
+* **IMP_HOSTSPEC:**
+* **IMP_MAILDOMAIN:**
+* **IMP_HORDEAUTH:**
+* **IMP_PROTOCOL:**
+* **IMP_PORT:**
+* **IMP_SECURE:**
+* **INGO_IMAP_DISABLED:**
+* **INGO_SIEVE_DISABLED:**
+* **INGO_SIEVE_HOST:**
+* **INGO_SIEVE_USETLS:**
+* **INGO_SIEVE_UTF8:**
+
 ## TODO
 
 * Explain how to run cron jobs
-* DocumentRoot en /var/www/html/horde
-* Parameterize `php.ini`:
-  * Upload and post max size
-  * Memory limit
-* Remove static assets: 
-
-```
-SetEnvIf Request_URI "\.gif$|\.jpg$" is_static
-CustomLog logs/access_log common env=!is_static
-```
+* Errors not to be shown in browser
+* Document in README env vars for IMP and INGO

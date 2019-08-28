@@ -1,3 +1,7 @@
+FROM alpine as theme
+RUN apk add -U git && \
+    git clone https://github.com/pannal/horde-groupware-theme-x.git /theme
+
 FROM php:5.6-apache
 ARG HORDE_WEBMAIL_VERSION=5.2.22
 WORKDIR /var/www/html
@@ -104,9 +108,16 @@ RUN apt-get update && \
 
 ENV HORDE_SQL_PORT=3306 \
     HORDE_SQL_DATABASE=horde
-COPY templates/horde/conf.php horde/config/conf.php
+COPY templates/horde/*.php horde/config/
 COPY templates /horde-templates
-RUN chown -R www-data horde/static && find . -type d -name config -exec chown -R www-data {} \; 
+COPY --from=theme /theme/themes/knttheme horde/themes/knttheme
+COPY --from=theme /theme/imp/themes/knttheme horde/imp/themes/knttheme
+COPY --from=theme /theme/kronolith/themes/knttheme horde/kronolith/themes/knttheme
 COPY start-horde /usr/local/bin/start-horde
+RUN chown -R www-data horde/static && find . -type d -name config -exec chown -R www-data {} \; && \
+    echo 'RewriteEngine On' > /var/www/html/.htaccess && \
+    echo 'RewriteRule ^$ /horde [L]' >> /var/www/html/.htaccess && \
+    echo 'SetEnvIf Request_URI "\.gif$|\.jpg|\.png|\.css|\.ico|\.js|\.jpeg$" is_static' > /etc/apache2/conf-enabled/horde.conf && \
+    sed -i 's@CustomLog ${APACHE_LOG_DIR}/access.log combined@CustomLog ${APACHE_LOG_DIR}/access.log combined env=!is_static@' /etc/apache2/sites-available/000-default.conf
 CMD ["start-horde"]
 
