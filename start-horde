@@ -9,6 +9,11 @@ echo "upload_max_file_size = $PHP_INI_UPLOAD_MAX_FILE_SIZE;" > $HORDE_INI
 echo "post_max_size = $PHP_INI_POST_MAX_SIZE;" >> $HORDE_INI
 echo "memory_limit = $PHP_INI_MEMORY_LIMIT;" >> $HORDE_INI
 echo "date.timezone = $PHP_INI_TIMEZONE;" >> $HORDE_INI
+# Used to initialize configurations when using shared volumes that dont
+# behave like docker named volumes that are initialized with current image 
+# values
+tar cf - /etc/horde-default-configurations | \
+  tar -C /var/www/html/horde -xf - --strip-components=2 --skip-old-file
 cp /horde-templates/horde/prefs.local.php /var/www/html/horde/config
 cp /horde-templates/imp/backends.local.php /var/www/html/horde/imp/config
 cp /horde-templates/ingo/backends.local.php /var/www/html/horde/ingo/config

@@ -118,6 +118,10 @@ RUN chown -R www-data horde/static && find . -type d -name config -exec chown -R
     echo 'RewriteEngine On' > /var/www/html/.htaccess && \
     echo 'RewriteRule ^$ /horde [L]' >> /var/www/html/.htaccess && \
     echo 'SetEnvIf Request_URI "\.gif$|\.jpg|\.png|\.css|\.ico|\.js|\.jpeg$" is_static' > /etc/apache2/conf-enabled/horde.conf && \
-    sed -i 's@CustomLog ${APACHE_LOG_DIR}/access.log combined@CustomLog ${APACHE_LOG_DIR}/access.log combined env=!is_static@' /etc/apache2/sites-available/000-default.conf
+    sed -i 's@CustomLog ${APACHE_LOG_DIR}/access.log combined@CustomLog ${APACHE_LOG_DIR}/access.log combined env=!is_static@' /etc/apache2/sites-available/000-default.conf && \
+    mkdir -p /etc/horde-default-configurations && \
+    find ./horde/ -maxdepth 3 -type d -name config -print0 | \
+      tar cf - --null -T - | \
+      tar -C /etc/horde-default-configurations --strip-components=2 -xf -
 CMD ["start-horde"]
 
